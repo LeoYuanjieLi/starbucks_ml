@@ -36,3 +36,4 @@ output/
 .DS_Store
 \.idea/
 *.html
+.ipynb_checkpoints/
