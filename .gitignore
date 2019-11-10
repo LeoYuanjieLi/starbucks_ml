@@ -37,3 +37,4 @@ output/
 \.idea/
 *.html
 .ipynb_checkpoints/
+css/
