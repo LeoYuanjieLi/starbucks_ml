@@ -175,6 +175,11 @@ There are `3` steps for our pipeline
  valid coupon completion, and what is the `id` of this coupon (see `out/valid_complete_day_df.csv`), and we can group 
  them by coupon `id` (see `training_data/target.csv`), this is our target data.
  
+ ![consumer 1](./assets/user_1.png)
+ ![consumer 2](./assets/user_2.png)
+ 
+ consumer trend examples
+ 
  #### 6.2 Feature Engineering
  
  #### Feature Group 1
