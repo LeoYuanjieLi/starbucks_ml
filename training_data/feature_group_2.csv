@@ -1,4 +1,4 @@
-person,Avg Daily spending,Highest daily spending,Lowest daily spending,count days no spending,count days spending 0_to_5,count days spending 5_to_10,count days spending 10_to_15,count days spending 15_to_20,count days spending 20_plus,std_daily_spending
+id,Avg Daily spending,Highest daily spending,Lowest daily spending,count days no spending,count days spending 0_to_5,count days spending 5_to_10,count days spending 10_to_15,count days spending 15_to_20,count days spending 20_plus,std_daily_spending
 0009655768c64bdeb2e877511632db8f,4.253333333333333,28.16,8.57,22.0,0.0,1.0,1.0,1.0,2.0,7.86723249474914
 00116118485d4dfda04fdbaba9a87b5c,0.13633333333333333,3.39,0.7000000000000001,28.0,2.0,0.0,0.0,0.0,0.0,0.6276528984395278
 0011e0d4e6b944f998e987f904e8c1e5,2.6486666666666667,23.03,8.96,25.0,0.0,1.0,1.0,0.0,2.0,6.461309109019538

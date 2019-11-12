@@ -24,21 +24,45 @@ The machine learning knowledge here is to tackle a `multi-label  binary classifi
 
 ## 3. Benchmark Model
 
-Use `K-nearest neighbor` model as it is a fast and standard method for binary classification machine learning problems
+Use `K-nearest neighbor` model as it is a fast and standard method for binary classification machine learning problems.
+
+Reason for using KNN:
+1. It provides a quick way to train the model and test the result.
+2. Because we only have `12` features, KNN will provide a fairly good result as its dimension is low.
+
+That being said, a quick and fairly accurate model will make it a good benchmark model.
 
 ## 4. Evaluation Metrics
 
 ### ROC_AUC
 Since it is a binary classfication problem, we will evaluate with `Area under the Curve (AUC) of Receiver Operating Characteristic (ROC) `
+![roc_auc](https://miro.medium.com/max/722/1*pk05QGzoWhCgRiiFbz-oKQ.png)
+source: [understanding-auc-roc-curve](https://towardsdatascience.com/understanding-auc-roc-curve-68b2303cc9c5)
 
 ### Recall
 
 We would rather give coupon to a consumer, even he/she won't use it, than missing a consumer that are potentially buying coffee. So recall is a more important measure than precision
+![recall](https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Precisionrecall.svg/700px-Precisionrecall.svg.png)
+source: [Recall definition from Wikipedia](https://en.wikipedia.org/wiki/Precision_and_recall)
 
 ### Feature Importance
 
-We will also run a `feature importance analysis` on the features.
+We will also run a `feature importance analysis` on the features. This can be done using `feature_importances_`
 
+```python
+import os
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+df = pd.read_csv(os.path.join('assets/', 'train_test.csv'))
+
+X = df[:, 1:]
+y = df[:, 0]
+clf = RandomForestClassifier(n_estimators=100,
+                             random_state=11,
+                            min_samples_split=10)
+                            
+feat_importances = pd.Series(clf.feature_importances_, index=X.columns)
+```
 
 ## 5. Dataset and Inputs
 
@@ -136,3 +160,43 @@ person
 ## 6. Solution Statement
 
 Use `Adaboost/Gradient Boosting` along with `Decision Tree` Classifier or `Random Forest` method to predict what coupon should we give to a user based on input features
+
+
+### Workflow
+There are `3` steps for our pipeline 
+
+ #### 6.1 Data Cleaning and Reformatting
+ The raw data we have are `portfolio`, `profile` and `portfolio`. We want to know for each consumer, what are the trend
+ of their buying activities (trends) as well as   
+ 
+ - We dropped user profile that has missing data 
+ - we group the transaction into a day by day format (column) by each consumer (row)
+ - based on `view` and `complete` info of transaction on each day, we can calculate on each day if a consumer has a
+ valid coupon completion, and what is the `id` of this coupon (see `out/valid_complete_day_df.csv`), and we can group 
+ them by coupon `id` (see `training_data/target.csv`), this is our target data.
+ 
+ #### 6.2 Feature Engineering
+ 
+ #### Feature Group 1
+ - we turn `profile` string columns `gender`, `become member on` into numeric data:
+     - `gender` {female: 0, male: 1}
+     - `become member on` {`current time` - `become member on`}
+     
+ Above is `training_data/feature_group_1`
+ 
+ #### Feature Group 2 
+ - based on the consumer trend information we created from the raw data(`out/completed_trend_day_df.csv`), we calculate
+ `feature_group_2` dataFrame, see `5. Data and Input (above)`
+ 
+ This is our `feature_group_2`
+ 
+ #### 6.3 Training & Evaluation
+ 
+ Since it is a multi-label ML problem, for each target(total `8`):
+ 
+     - We will first run a KNN only based on all features 
+     - We run a feature importance analysis on features, if necessary, we reduce the dimension using PCA
+     - We apply random forest multi-label classifier
+     - evaluate with ROC_AUC / Recall / Accuracy
+     - Improve with Hyper-parameter tuning
+     
