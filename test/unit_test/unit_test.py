@@ -4,7 +4,7 @@ from helper.data_cleaning import (
     clean_profile,
     one_hot_encode,
     one_hot_encode_channels,
-    join_data,
+    join_coupon_profile_data,
     clean_portfolio,
     one_hot_encode_age,
     one_hot_encode_income,
@@ -27,7 +27,7 @@ def test_one_hot_encode_channels(test_data_dir):
 def test_join_data(test_data_dir):
     profile = clean_profile(os.path.join(test_data_dir, "profile.json"))
     portfolio = clean_portfolio(os.path.join(test_data_dir, "portfolio.json"))
-    res = join_data(portfolio, profile[:5])
+    res = join_coupon_profile_data(portfolio, profile[:5])
     assert res.shape[0] == portfolio.shape[0] * profile[:5].shape[0]
 
 

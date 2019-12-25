@@ -32,6 +32,10 @@ docs/_build/
 # Directories
 output/
 
+# archived
+*archived*
+archived/
+
 # Other
 .DS_Store
 \.idea/
