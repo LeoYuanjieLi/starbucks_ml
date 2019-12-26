@@ -175,33 +175,140 @@ There are `3` steps for our pipeline
  valid coupon completion, and what is the `id` of this coupon (see `out/valid_complete_day_df.csv`), and we can group 
  them by coupon `id` (see `training_data/target.csv`), this is our target data.
  
- ![consumer 1](./assets/user_1.png)
- ![consumer 2](./assets/user_2.png)
+ ![consumer 1](https://github.com/LeoYuanjieLi/starbucks_ml/blob/master/assets/user_1.png)
+ ![consumer 2](https://github.com/LeoYuanjieLi/starbucks_ml/blob/master/assets/user_2.png)
  
  consumer trend examples
  
  #### 6.2 Feature Engineering
  
- #### Feature Group 1
- - we turn `profile` string columns `gender`, `become member on` into numeric data:
-     - `gender` {female: 0, male: 1}
-     - `become member on` {`current time` - `become member on`}
+ #### Feature - Profile
+ - we turn `profile` data into a one-hot-encoding format:
+    - Rename "id" to "consumer_id"
+    - Drop all `nan` data
+    - Drop "gender" that are in the `O` catergory
+    - Split date into `year`, `month`, `day`
+    - One Hot Encode `date`, `gender`, `age` and `income`
+
+```bash
+2013	2014	2015	2016	2017	2018	01	02	03	04	...	30000-40000	40000-50000	50000-60000	60000-70000	70000-80000	80000-90000	90000-100000	100000-110000	110000-120000	120000-130000
+consumer_id																					
+0610b486422d4921ae7d2bf64640c50b	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	...	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0
+78afa995795e4d85b5d9ceeca43f5fef	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	...	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0
+e2127556f4f64592b11af22de27a7932	0.0	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	1.0	...	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0
+389bc3fa690240e798340f5a15918d5c	0.0	0.0	0.0	0.0	0.0	1.0	0.0	1.0	0.0	0.0	...	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0
+2eeac8d8feae4a8cad5a6af0499a211d	0.0	0.0	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	...	0.0	0.0	1.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0
+```
      
- Above is `training_data/feature_group_1`
  
- #### Feature Group 2 
- - based on the consumer trend information we created from the raw data(`out/completed_trend_day_df.csv`), we calculate
- `feature_group_2` dataFrame, see `5. Data and Input (above)`
+ #### Feature - Portfolio
+ Things that are interesting to us are:
+
+- `difficulty`: how much do you need to spend to trigger the reward;
+
+- `duration`: maximum time for the user to complete the offer;
+
+- `offer_type`: Buy one get one free or just discount
+
+We know that there are 10 different offers, and `8` of them are actually coupons (we don't care about informational).
+
+- Offer types are our `target data`. In the end, we want need a True/False Table for each coupon map to each user
+
+Perform the following steps to preprocess the data.
+
+- Rename "id" to "offer_id"
+- Drop "informational" offer type
+- One Hot Encode `offer type` and `channels`
  
- This is our `feature_group_2`
+```bash
+	reward	difficulty	duration	bogo	discount	email	mobile	web	social
+offer_id									
+ae264e3637204a6fb9bb56bc8210ddfd	10	10	7	1.0	0.0	1.0	1.0	0.0	1.0
+4d5c57ea9a6940dd891ad53e9dbe8da0	10	10	5	1.0	0.0	1.0	1.0	1.0	1.0
+9b98b8c7a33c4b65b9aebfe6a799e6d9	5	5	7	1.0	0.0	1.0	1.0	1.0	0.0
+0b1e1539f2cc45b7b9fa7c272da2e1d7	5	20	10	0.0	1.0	1.0	0.0	1.0	0.0
+2298d6c36e964ae4a3e7e9706d1fb8c2	3	7	7	0.0	1.0	1.0	1.0	1.0	1.0
+fafdcd668e3743c1bb461111dcafc2a4	2	10	10	0.0	1.0	1.0	1.0	1.0	1.0
+f19421c1d4aa40978ebb69ca19b0e20d	5	5	5	1.0	0.0	1.0	1.0	1.0	1.0
+2906b810c7d4411798c6938adc9daaa5	2	10	7	0.0	1.0	1.0	1.0	1.0	0.0
+```
+
+#### Features - Consumer Trend
+
+Based on the transcript information, create a table that contains the following features
+
+- Avg Daily spending: The mean of spending of each day
+- Highest daily spending: The max of daily spending
+- Lowest daily spending: The min of daily spending
+- std_daily_spending: The standard deviation of daily spending
+- Count days no spending: The number of days consumer did not spend on starbucks coffee
+- count days spending 0_to_5: The number of days consumer spend 0 - 5 on starbucks coffee
+- count days spending 5_to_10: The number of days consumer spend 5 - 10 on starbucks coffee
+- count days spending 10_to_15: The number of days consumer spend 10 - 15 on starbucks coffee
+- count days spending 15_to_20: The number of days consumer spend 15 - 20 on starbucks coffee
+- count days spending 20_plus: The number of days consumer spend 20 plus on starbucks coffee
+ 
+ ```bash
+                                   Avg Daily spending	Highest daily spending	Lowest daily spending	count days no spending	count days spending 0_to_5	count days spending 5_to_10	count days spending 10_to_15	count days spending 15_to_20	count days spending 20_plus	std_daily_spending
+consumer_id										
+0009655768c64bdeb2e877511632db8f	4.253333	28.16	8.57	22.0	0.0	1.0	1.0	1.0	2.0	7.867232
+00116118485d4dfda04fdbaba9a87b5c	0.136333	3.39	0.70	28.0	2.0	0.0	0.0	0.0	0.0	0.627653
+0011e0d4e6b944f998e987f904e8c1e5	2.648667	23.03	8.96	25.0	0.0	1.0	1.0	0.0	2.0	6.461309
+0020c2b971eb4e9188eac86d93036a77	6.562000	49.63	17.24	24.0	0.0	0.0	0.0	1.0	5.0	14.444319
+0020ccbbb6d84e358d3414a3ff76cffd	5.135000	30.84	6.81	19.0	0.0	3.0	3.0	2.0	1.0	7.923300
+```
+
+#### Feature - Consumer Coupon Sensitivity
+
+Let's take a look at how consumer `react` to coupons:
+
+![consumer example](https://github.com/LeoYuanjieLi/starbucks_ml/blob/master/assets/consumer_example.png)
+
+
+Based on this data visualization, we can tell the `view` activity has so what a connection to the spending activity:
+
+For these 2 consumer, at least, it looks like `more spending activities are followed by the view acitivity`.
+
+It will be helpful to create a feature to describe this phenomenon - `Coupon Sensitivity`
+
+Here is how it works:
+
+For the duration of the coupon (in the following days), how much `more` does this person spend compare to the purchase that are not initiated by the coupon - those purchases not in the following days of a coupon view event.
+
+Formula for `coupon sensitivity`
+
+`(avg_couponx_effective_spend - avg_spend_without_coupon) / coupon_difficulty`
+
+- avg_couponx_effective_spend: if a consumer views a coupon, if he/she spend in the following days within its duration, these amount are called couponx_effective_spend, we then take the average.
+
+- avg_spend_without_coupon: if a consumer spend on coffee in the days that are not affect by ANY coupon
+
+- coupon difficulty: the difficulty of completing the coupon, this is to normalize each coupon
+
+```bash
+	avg_spend_without_coupon	ae264e3637204a6fb9bb56bc8210ddfd_type_spend	4d5c57ea9a6940dd891ad53e9dbe8da0_type_spend	9b98b8c7a33c4b65b9aebfe6a799e6d9_type_spend	0b1e1539f2cc45b7b9fa7c272da2e1d7_type_spend	2298d6c36e964ae4a3e7e9706d1fb8c2_type_spend	fafdcd668e3743c1bb461111dcafc2a4_type_spend	f19421c1d4aa40978ebb69ca19b0e20d_type_spend	2906b810c7d4411798c6938adc9daaa5_type_spend	ae264e3637204a6fb9bb56bc8210ddfd_type_sensitivity	4d5c57ea9a6940dd891ad53e9dbe8da0_type_sensitivity	9b98b8c7a33c4b65b9aebfe6a799e6d9_type_sensitivity	0b1e1539f2cc45b7b9fa7c272da2e1d7_type_sensitivity	2298d6c36e964ae4a3e7e9706d1fb8c2_type_sensitivity	fafdcd668e3743c1bb461111dcafc2a4_type_sensitivity	f19421c1d4aa40978ebb69ca19b0e20d_type_sensitivity	2906b810c7d4411798c6938adc9daaa5_type_sensitivity
+consumer_id																	
+0009655768c64bdeb2e877511632db8f	3.815000	0.000000	0.000	0.000000	0.000	0.000000	12.108750	5.534000	0.00000	-0.381500	-0.381500	-0.763000	-0.190750	-0.545000	0.829375	0.343800	-0.381500
+00116118485d4dfda04fdbaba9a87b5c	0.227222	0.000000	0.000	0.000000	0.000	0.000000	0.000000	0.077778	0.00000	-0.022722	-0.022722	-0.045444	-0.011361	-0.032460	-0.022722	-0.029889	-0.022722
+0011e0d4e6b944f998e987f904e8c1e5	1.887778	0.000000	0.000	7.720000	5.404	1.704286	0.000000	0.000000	0.00000	-0.188778	-0.188778	1.166444	0.175811	-0.026213	-0.188778	-0.377556	-0.188778
+0020c2b971eb4e9188eac86d93036a77	2.838889	0.000000	3.448	0.000000	0.000	0.000000	9.833000	0.000000	0.00000	-0.283889	0.060911	-0.567778	-0.141944	-0.405556	0.699411	-0.567778	-0.283889
+0020ccbbb6d84e358d3414a3ff76cffd	7.570000	0.000000	0.000	2.965000	0.000	6.655714	0.000000	10.860000	0.00000	-0.757000	-0.757000	-0.921000	-0.378500	-0.130612	-0.757000	0.658000	-0.757000
+```
  
  #### 6.3 Training & Evaluation
  
- Since it is a multi-label ML problem, for each target(total `8`):
- 
-     - We will first run a KNN only based on all features 
-     - We run a feature importance analysis on features, if necessary, we reduce the dimension using PCA
-     - We apply random forest multi-label classifier
-     - evaluate with ROC_AUC / Recall / Accuracy
-     - Improve with Hyper-parameter tuning
+## Training & Evaluation
+
+We will perform the following steps for our Training (evaluation metrix: with ROC_AUC / Recall / Accuracy):
+
+ 1. We will first run a KNN only based on all features
+ 2. We run a feature importance analysis on features, if necessary, we reduce the dimension using PCA
+ 3. We apply random forest classifier on other target coupons
+ 4. Improve with Hyper-parameter tuning (Optional)
+ 5. Wrap the models to a single function that takes a consumer id and return the best coupon for this consumer
+     - I will use the mathematic expectation, fomula:
+     
+         `expectation = roc_auc * difficulty` 
+         
+         (the more difficult, the more that consumer will spend)
      
