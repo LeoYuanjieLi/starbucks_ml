@@ -5,6 +5,16 @@
 
 ---
 
+# Installation
+
+make sure you are using python 3.7+
+
+```bash
+pip install -r requirement.txt
+```
+
+# Project Proposal
+
 ## 1. Problem Statement
 
 This is a supervised learning classification problem. Specifically, it is a multi-label classification problem.
@@ -313,3 +323,8 @@ We will perform the following steps for our Training (evaluation metrix: with RO
          
          (the more difficult, the more that consumer will spend)
      
+     
+# Complete Project
+
+    - You can find the complete project in the `StarbucksML` notebook
+    - You can also find the pdf version in `StarbucksMachineLearningLeoLi.pdf`
