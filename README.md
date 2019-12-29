@@ -69,7 +69,8 @@ feat_importances = pd.Series(clf.feature_importances_, index=X.columns)
 #### Raw Dataset
 #### 5.1 Portfolio
 
-There are a total of `10` type of promotions, but `2` of them are just informational, hense we don't care. The other `8` are actual coupons
+There are a total of `10` type of promotions, but `2` of them are just informational, hense we don't care. The other `8`
+ are actual coupons
 
 ```bash
 id	                             reward	   channels	  difficulty	duration	offer_type				
