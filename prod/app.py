@@ -31,7 +31,7 @@ def get_prediction():
             data, models
         )  # runs globally loaded model on the data
 
-        return f"Best coupon for this consumer is {prediction[0]}, the expected spending is {prediction[1]}"
+        return prediction
 
 
 def recommend_coupon_to_consumer(consumer_id, clf_list):
@@ -59,7 +59,8 @@ def recommend_coupon_to_consumer(consumer_id, clf_list):
     print(
         f"best coupon for the consumer is: {best}, consumer expected spend is {max_e} "
     )
-    return best, max_e
+    print(clf_list[max_i]["consumer_data"].loc[consumer_id])
+    return clf_list[max_i]["consumer_data"].loc[consumer_id].to_json()
 
 
 if __name__ == "__main__":
